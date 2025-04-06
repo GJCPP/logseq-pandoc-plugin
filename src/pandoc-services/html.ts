@@ -1,4 +1,4 @@
-export const convertToHtml = async (pandoc: any, content: string) => {
+export const convertToHtml = async (pandoc: any, content: string, filename: string) => {
   const result = await pandoc.run({
     text: content,
     options: { from: 'markdown', to: 'html' },
@@ -9,7 +9,7 @@ export const convertToHtml = async (pandoc: any, content: string) => {
 
   const a = document.createElement('a')
   a.href = url
-  a.download = 'output.html'
+  a.download = `${filename}.html`
   a.style.display = 'none'
   document.body.appendChild(a)
   a.click()

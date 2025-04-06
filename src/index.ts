@@ -4,7 +4,9 @@ import { TIMEOUT } from './constants'
 import { menuItems } from './menu-items'
 import { settings } from './settings'
 import { getAllNestedContent } from './utils/get-all-nested-content'
+import { loadRulesFromFile } from './utils/load-rules'
 import { pandocInit } from './utils/pandoc-init'
+
 
 const main = async () => {
   console.log('logseq-pandoc-plugin loaded')
@@ -24,6 +26,8 @@ const main = async () => {
 
   setTimeout(async () => {
     const pandoc = await pandocInit()
+    const rules = await loadRulesFromFile('../match_rules.json') // Load rules from match_rules.json
+    
     logseq.UI.closeMsg('introMsg')
     logseq.UI.showMsg('Able to start using Pandoc now', 'success')
 
@@ -35,8 +39,11 @@ const main = async () => {
           const pbt = await logseq.Editor.getPageBlocksTree(e.page)
           if (!pbt || pbt.length === 0) return
 
-          const allContent = await getAllNestedContent(pbt)
-          await item.action(pandoc, allContent)
+          const allContent = await getAllNestedContent(pbt, rules)
+          const page = await logseq.Editor.getCurrentPage()
+          const filename = `${page?.name ?? 'output'}`
+
+          await item.action(pandoc, allContent, filename)
         })
       }
     }
@@ -50,8 +57,11 @@ const main = async () => {
           })
           if (!blk) return
 
-          const allContent = await getAllNestedContent([blk])
-          await item.action(pandoc, allContent)
+          const page = await logseq.Editor.getCurrentPage()
+          const filename = `${page?.name ?? 'output'}`
+
+          const allContent = await getAllNestedContent([blk], rules)
+          await item.action(pandoc, allContent, filename)
         })
       }
     }
@@ -84,7 +94,7 @@ const main = async () => {
         // OPTION 2: Cat the actual markdown STRING to pandoc.
         const pbt = await logseq.Editor.getPageBlocksTree(e.page)
         if (!pbt || pbt.length === 0) return
-        const mdString = await getAllNestedContent(pbt)
+        const mdString = await getAllNestedContent(pbt, rules)
         const pandocShellCmd = `cat << EOF | pandoc --lua-filter=${logseq.settings!.pathToFilter} --from=markdown --to=docx --output=${logseq.settings!.pathToOutput}
 ${mdString}
 EOF`

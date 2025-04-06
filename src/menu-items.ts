@@ -7,7 +7,7 @@ import {
 
 interface MenuItem {
   label: string
-  action: (pandoc: any, content: string) => Promise<void>
+  action: (pandoc: any, content: string, filename: string) => Promise<void>
 }
 
 export const menuItems: MenuItem[] = [

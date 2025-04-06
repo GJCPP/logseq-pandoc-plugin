@@ -1,4 +1,4 @@
-export const convertToLatex = async (pandoc: any, content: string) => {
+export const convertToLatex = async (pandoc: any, content: string, filename: string) => {
   const result = await pandoc.run({
     text: content,
     options: { from: 'markdown', to: 'latex' },
@@ -9,7 +9,7 @@ export const convertToLatex = async (pandoc: any, content: string) => {
 
   const a = document.createElement('a')
   a.href = url
-  a.download = 'output.tex'
+  a.download = `${filename}.tex`
   a.style.display = 'none'
   document.body.appendChild(a)
   a.click()
