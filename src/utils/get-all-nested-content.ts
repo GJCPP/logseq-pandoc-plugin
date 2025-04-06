@@ -41,8 +41,7 @@ const replaceImage = (text: string, listOfAssets: any): string => {
     // In Logseq, the URL of an image is the relative path, e.g. "../assets/image1.png".
     // However, the LaTeX figure environment requires the full path, e.g. "/Users/username/Documents/logseq/assets/image1.png".
 
-
-    // Step 1. Truncate URL to the last slash to obtain the filename.
+    // Truncate URL to the last slash to obtain the filename.
     // For example, "../assets/2021-01-01.png" would be truncated to "2021-01-01.png"
     const truncatedUrl = url.substring(url.lastIndexOf('/') + 1);
 
@@ -52,7 +51,7 @@ const replaceImage = (text: string, listOfAssets: any): string => {
         url = matchingAsset.path; // Use the full matching asset path
     }
     url = url.replace(/\\/g, "/");
-    return `\\begin{figure}[h!]\\centering\n\n\\includegraphics[width=0.7\\textwidth]{${url}}\n\\end{figure}`;
+    return `![${alt}](${url})`;
   });
   return content
 }
@@ -126,5 +125,8 @@ export const getAllNestedContent = async (
     }
   }
   await getNestedContent(blocks)
+
+  // console.log(str)
+
   return str
 }
