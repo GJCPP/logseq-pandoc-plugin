@@ -117,6 +117,5 @@ export const getAllNestedContent = async (
     }
   }
   await getNestedContent(blocks)
-  console.log(str)
   return str
 }
