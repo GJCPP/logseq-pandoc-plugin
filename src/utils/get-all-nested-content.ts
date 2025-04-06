@@ -6,7 +6,7 @@ export const getAllNestedContent = async (
   let str = ''
   const getNestedContent = async (blocks: BlockEntity[]) => {
     for (const block of blocks) {
-      if (block.content.length === 0) continue
+      if (block.content === undefined || block.content.length === 0) continue
 
       // Start handling brackets, block references, etc.
       let content = block.content.trim().replace('[[', '').replace(']]', '')
