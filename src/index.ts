@@ -39,7 +39,7 @@ const main = async () => {
           const pbt = await logseq.Editor.getPageBlocksTree(e.page)
           if (!pbt || pbt.length === 0) return
 
-          const allContent = await getAllNestedContent(pbt, rules)
+          const allContent = await getAllNestedContent(pbt, rules, item.format)
           const page = await logseq.Editor.getCurrentPage()
           const filename = `${page?.name ?? 'output'}`
 
@@ -60,7 +60,7 @@ const main = async () => {
           const page = await logseq.Editor.getCurrentPage()
           const filename = `${page?.name ?? 'output'}`
 
-          const allContent = await getAllNestedContent([blk], rules)
+          const allContent = await getAllNestedContent([blk], rules, item.format)
           await item.action(pandoc, allContent, filename)
         })
       }
@@ -94,7 +94,7 @@ const main = async () => {
         // OPTION 2: Cat the actual markdown STRING to pandoc.
         const pbt = await logseq.Editor.getPageBlocksTree(e.page)
         if (!pbt || pbt.length === 0) return
-        const mdString = await getAllNestedContent(pbt, rules)
+        const mdString = await getAllNestedContent(pbt, rules, "docx")
         const pandocShellCmd = `cat << EOF | pandoc --lua-filter=${logseq.settings!.pathToFilter} --from=markdown --to=docx --output=${logseq.settings!.pathToOutput}
 ${mdString}
 EOF`

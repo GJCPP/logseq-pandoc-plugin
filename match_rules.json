@@ -4,25 +4,29 @@
 		  "match": "### Proof",
 		  "begin": "\\begin{proof}",
 		  "end": "\\end{proof}",
-		  "islatex": true
+		  "islatex": true,
+		  "formats": ["latex"]
 		},
 		"Theorem" : {
 		  "match": "### Theorem",
 		  "begin": "\\begin{theorem}",
 		  "end": "\\end{theorem}",
-		  "islatex": true
+		  "islatex": true,
+		  "formats": ["latex"]
 		},
 		"Problem" : {
 		  "match": "### Problem",
 		  "begin": "\\begin{problem}",
 		  "end": "\\end{problem}",
-		  "islatex": true
+		  "islatex": true,
+		  "formats": ["latex"]
 		},
 		"Answer" : {
 		  "match": "### Answer",
 		  "begin": "\\begin{answer}",
 		  "end": "\\end{answer}",
-		  "islatex": true
+		  "islatex": true,
+		  "formats": ["latex"]
 		}
 	},
 
@@ -32,20 +36,21 @@
 			"replacement": "",
 			"matchType": "regex"
 		},
-		"background-color" : {
-			"trigger": "background-color:: (.+)",
-			"matchType": "regex",
-			"front": "\\textcolor{$1}{",
-			"replacement": "",
-			"back": "}",
-			"islatex": true
-		},
 		"public" : {
 			"trigger": "public:: (.+)",
 			"matchType": "regex",
 			"front": "",
 			"replacement": "",
 			"back": ""
+		},
+		"background-color" : {
+			"trigger": "background-color:: (.+)",
+			"matchType": "regex",
+			"front": "\\textcolor{$1}{",
+			"replacement": "",
+			"back": "}",
+			"islatex": true,
+		  "formats": ["latex"]
 		}
 	}
 }

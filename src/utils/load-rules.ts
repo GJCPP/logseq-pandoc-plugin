@@ -8,7 +8,8 @@ export interface EnvironmentRule {
     end: string
     matchType?: MatchType
     compiledRegex?: RegExp
-    islatex: boolean
+    islatex: boolean,
+    formats?: string[]
 }
   
 export interface ContentRule {
@@ -20,7 +21,8 @@ export interface ContentRule {
     front?: string
     back?: string
     compiledRegex?: RegExp
-    islatex: boolean
+    islatex: boolean,
+    formats?: string[]
 }
 
 export interface RuleSet {
@@ -53,7 +55,8 @@ export async function loadRulesFromFile(filepath: string): Promise<RuleSet> {
                 end: raw.end,
                 matchType: raw.matchType || 'exact',
                 compiledRegex: raw.matchType === 'regex' ? new RegExp(raw.match) : undefined,
-                islatex: !!raw.islatex
+                islatex: !!raw.islatex,
+                formats: raw.formats ?? []
             }
             if (rule.islatex) {
                 rule.begin = wrapLatex(rule.begin)
@@ -74,7 +77,8 @@ export async function loadRulesFromFile(filepath: string): Promise<RuleSet> {
                 front: raw.front,
                 back: raw.back,
                 compiledRegex: raw.matchType === 'regex' ? new RegExp(raw.trigger) : undefined,
-                islatex: !!raw.islatex
+                islatex: !!raw.islatex,
+                formats: raw.formats ?? []
             }
             if (rule.islatex) {
                 rule.front = wrapLatex(rule.front)

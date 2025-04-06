@@ -59,13 +59,22 @@ const replaceImage = (text: string, listOfAssets: any): string => {
 
 export const getAllNestedContent = async (
   blocks: BlockEntity[],
-  rules: RuleSet
+  rules: RuleSet,
+  format: string // To which format are we translating
 ): Promise<string> => {
   let str = ''
   const beginEnumerate = wrapLatex("\\begin{enumerate}")
   const itemEnumerate = wrapLatex("\\item ")
   const endEnumerate = wrapLatex("\\end{enumerate}")
   const listOfAssets = await logseq.Assets.listFilesOfCurrentGraph()
+
+  const activeEnvRules = rules.Environment.filter(r =>
+    !r.formats?.length || r.formats.includes(format)
+  )
+  const activeContentRules = rules.Content.filter(r =>
+    !r.formats?.length || r.formats.includes(format)
+  )
+
   const getNestedContent = async (blocks: BlockEntity[]) => {
     // Check for logseq.order-list-type:: number
     const inList = cleanOrderListType(blocks)
@@ -91,9 +100,9 @@ export const getAllNestedContent = async (
       }
 
       content = replaceImage(content, listOfAssets)
-      content = applyContentRules(content, rules.Content)
+      content = applyContentRules(content, activeContentRules)
 
-      const envRule = rules.Environment.find(r =>
+      const envRule = activeEnvRules.find(r =>
         r.matchType === 'regex' && r.compiledRegex
           ? r.compiledRegex.test(content)
           : r.match === content

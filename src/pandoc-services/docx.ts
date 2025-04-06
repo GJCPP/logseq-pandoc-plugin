@@ -14,7 +14,7 @@ export const convertToDocx = async (pandoc: any, content: string, filename: stri
       type: 'mime',
     }),
   )
-  a.download = `${filename}.tex`
+  a.download = `${filename}.docx`
   a.style.display = 'none'
   document.body.appendChild(a)
   a.click()
