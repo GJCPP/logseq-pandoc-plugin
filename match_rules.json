@@ -7,6 +7,13 @@
 		  "islatex": true,
 		  "formats": ["latex"]
 		},
+		"Lemma" : {
+		  "match": "### Lemma",
+		  "begin": "\\begin{lemma}",
+		  "end": "\\end{lemma}",
+		  "islatex": true,
+		  "formats": ["latex"]
+		},
 		"Theorem" : {
 		  "match": "### Theorem",
 		  "begin": "\\begin{theorem}",
@@ -14,17 +21,10 @@
 		  "islatex": true,
 		  "formats": ["latex"]
 		},
-		"Problem" : {
-		  "match": "### Problem",
-		  "begin": "\\begin{problem}",
-		  "end": "\\end{problem}",
-		  "islatex": true,
-		  "formats": ["latex"]
-		},
-		"Answer" : {
-		  "match": "### Answer",
-		  "begin": "\\begin{answer}",
-		  "end": "\\end{answer}",
+		"Corollary" : {
+		  "match": "### Corollary",
+		  "begin": "\\begin{corollary}",
+		  "end": "\\end{corollary}",
 		  "islatex": true,
 		  "formats": ["latex"]
 		}
@@ -51,6 +51,27 @@
 			"back": "}",
 			"islatex": true,
 		  "formats": ["latex"]
+		},
+		"BEGIN" : {
+			"trigger": "#\\+BEGIN[A-Za-z0-9-_]+",
+			"matchType": "regex",
+			"front": "",
+			"replacement": "",
+			"back": ""
+		},
+		"END" : {
+			"trigger": "#\\+END[A-Za-z0-9-_]+",
+			"matchType": "regex",
+			"front": "",
+			"replacement": "",
+			"back": ""
+		},
+		"img height/width" : {
+			"trigger": "(?<=!\\[[^\\]]*\\]\\([^)]+\\))\\{:[^}]*\\}",
+			"matchType": "regex",
+			"front": "",
+			"replacement": "",
+			"back": ""
 		}
 	}
 }

@@ -1,38 +1,39 @@
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 
-import { ContentRule, RuleSet, wrapLatex } from './load-rules'
+import { applyContentRule, applyEnvironmentRule, ContentRule, RuleSet, wrapLatex } from './load-rules'
+
 
 
 const applyContentRules = (text: string, rules: ContentRule[]): string => {
+  let linefront = ''
+  let lineback = ''
+
   for (const rule of rules) {
-    if (rule.matchType === 'regex' && rule.compiledRegex) {
-      text = text.replace(rule.compiledRegex, (_, ...groups) => {
-        const front = rule.front?.replace(/\$1/g, groups[0]) ?? ''
-        const back = rule.back?.replace(/\$1/g, groups[0]) ?? ''
-        return front + (rule.replacement ?? '') + back
-      })
-    } else {
-      text = text.replace(rule.trigger, rule.replacement ?? '')
-    }
+    const res = applyContentRule(rule, text)
+    linefront = res.front + linefront
+    text = res.middle
+    lineback = lineback + res.back
   }
-  return text
+
+  return linefront + text + lineback
 }
 
+
 const cleanOrderListType = (blocks: BlockEntity[]): boolean => {
-    let replaced = false
+  let replaced = false
 
-    for (const block of blocks) {
-        if (block.content) {
-            const trimedContent = block.content.trim()
-            const cleaned = trimedContent.replace("logseq.order-list-type:: number", '').trim()
-            if (cleaned !== trimedContent) {
-                block.content = cleaned
-                replaced = true
-            }
-        }
+  for (const block of blocks) {
+    if (block.content) {
+      const trimedContent = block.content.trim()
+      const cleaned = trimedContent.replace("logseq.order-list-type:: number", '').trim()
+      if (cleaned !== trimedContent) {
+        block.content = cleaned
+        replaced = true
+      }
     }
+  }
 
-    return replaced
+  return replaced
 }
 
 const replaceImage = (text: string, listOfAssets: any): string => {
@@ -46,9 +47,9 @@ const replaceImage = (text: string, listOfAssets: any): string => {
     const truncatedUrl = url.substring(url.lastIndexOf('/') + 1);
 
     const matchingAsset = listOfAssets.find((asset: { path: string }) => asset.path.endsWith(truncatedUrl)); // Find the asset with the matching path.
-    
+
     if (matchingAsset) {
-        url = matchingAsset.path; // Use the full matching asset path
+      url = matchingAsset.path; // Use the full matching asset path
     }
     url = url.replace(/\\/g, "/");
     return `![${alt}](${url})`;
@@ -101,25 +102,30 @@ export const getAllNestedContent = async (
       content = replaceImage(content, listOfAssets)
       content = applyContentRules(content, activeContentRules)
 
-      const envRule = activeEnvRules.find(r =>
-        r.matchType === 'regex' && r.compiledRegex
-          ? r.compiledRegex.test(content)
-          : r.match === content
-      )
+      const envRule = activeEnvRules.find(r => {
+        if (r.matchType === 'regex' && r.compiledRegex) {
+          const match = r.compiledRegex.exec(content)
+          return match?.[0] === content
+        } else {
+          return r.match === content
+        }
+      })
       
       if (envRule) {
-        str += envRule.begin + '\n'
+        const { begin, end } = applyEnvironmentRule(envRule, content)
+      
+        str += begin + '\n'
         if (block.children) await getNestedContent(block.children as BlockEntity[])
-        str += envRule.end + '\n\n'
+        str += end + '\n\n'
       } else {
         if (inList) {
-          str += itemEnumerate // Add \item before the list entry
+          str += itemEnumerate
         }
         str += content.trim() + '\n\n'
         if (block.children) await getNestedContent(block.children as BlockEntity[])
       }
     }
-    
+
     if (inList) {
       str += endEnumerate // Add \end{enumerate}
     }
